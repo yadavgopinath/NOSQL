@@ -6,7 +6,7 @@ const mongoose=require('mongoose');
 
 const errorController = require('./controllers/error');
 
-// const User=require('./models/user');
+const User=require('./models/user');
 
 const app = express();
 
@@ -19,16 +19,16 @@ const adminRoutes = require('./routes/admin');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use((req, res, next) => {
-//   User.findById('67c7552a2cccdf21090b4a17')
-//     .then(user => {
-//       req.user = new User(user.name,user.email,user.cart,user._id);
-//     //  req.user=user;
-//       next();
-//     })
-//     .catch(err => console.log(err));
+app.use((req, res, next) => {
+  User.findById('67cc554d0b97ed87d6772cc4')
+    .then(user => {
+     // req.user = new User(user.name,user.email,user.cart,user._id);
+      req.user=user;
+      next();
+    })
+    .catch(err => console.log(err));
   
-// });
+});
 
 app.use('/admin', adminRoutes);
  app.use(shopRoutes);
@@ -36,8 +36,21 @@ app.use('/admin', adminRoutes);
 app.use(errorController.get404);
 
 mongoose
-.connect('mongodb+srv://yadavgopinath93:Gopi1708@cluster0.bx266.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0')
+.connect('mongodb+srv://yadavgopinath93:@cluster0.bx266.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0')
 .then(result=>{
+  console.log('connected');
+  User.findOne().then(user=>{
+ if(!user){
+  const user=new User({
+    name:'Max',
+    email:'Max@test.com',
+    cart:{
+      items:[]
+    }
+  });
+  user.save();
+ }
+  }) 
   app.listen(3000);
 })
 .catch(err=>{
